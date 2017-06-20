@@ -16,7 +16,8 @@ function createFunnel(divId, width, height, funnelData) {
                         .x(function(d) { return d.x; })
                          .y(function(d) { return d.y; })
                         .interpolate("linear");
-    
+    var headerBuffer = 100;
+        
     function getPhaseWidth() {
         return width / funnelData.length ;
     }
@@ -32,29 +33,46 @@ function createFunnel(divId, width, height, funnelData) {
     }
     
     function getCenter() {
-        return height / 2;
+        return headerBuffer + (height / 2);
     }
     
-    function mapPhase(phases, startHeight, position) {
+    /**
+     * The main function that will draw a phase. It takes some data from the previous phases,
+     * does its thing and recurses onto the next phase.
+     * 
+     * @param {type} phases the phases still to be drawn
+     * @param {type} startHeight the height of the previous phase to properly align
+     * @param {type} sequence the sequence in the list... needed to know where to drow ourselves
+     * @returns {undefined}
+     */
+    function mapPhase(phases, startHeight, sequence) {
         if(phases === undefined || phases.length === 0) {
             return; // I've done my job... stop the recursion
         }
-        var first = head(phases);
-        console.log("Rendering "+first.name);
-        var lineData = [ { "x": position * getPhaseWidth(),   "y": getCenter() + startHeight},  // left below
-                         { "x": position * getPhaseWidth(),  "y": getCenter() - startHeight},   // left top
-                         { "x": (position+1) * getPhaseWidth(),   "y": getCenter() - getPhaseHeight(first)},  // right top
-                         { "x": (position+1) * getPhaseWidth(),  "y": getCenter() + getPhaseHeight(first)},    // right below
-                         { "x": position * getPhaseWidth(),   "y": getCenter() + startHeight} // and back to the start
+        var currentPhase = head(phases);
+        console.log("Rendering "+currentPhase.name);
+        var lineData = [ { "x": sequence * getPhaseWidth(),   "y": getCenter() + startHeight},  // left below
+                         { "x": sequence * getPhaseWidth(),  "y": getCenter() - startHeight},   // left top
+                         { "x": (sequence+1) * getPhaseWidth(),   "y": getCenter() - getPhaseHeight(currentPhase)},  // right top
+                         { "x": (sequence+1) * getPhaseWidth(),  "y": getCenter() + getPhaseHeight(currentPhase)},    // right below
+                         { "x": sequence * getPhaseWidth(),   "y": getCenter() + startHeight} // and back to the start
                         ];
         
-        var lineGraph = svgContainer.append("path")
-                            .attr("d", lineFunction(lineData))
-                            .attr("stroke", "blue")
-                            .attr("stroke-width", 2)
-                            .attr("fill", "blue");
-        // now recurse to the following element
-        mapPhase(tail(phases), getPhaseHeight(first), position + 1);
+        svgContainer.append("path")
+                    .attr("d", lineFunction(lineData))
+                    .attr("stroke", "blue")
+                    .attr("stroke-width", 2)
+                    .attr("fill", "blue");
+             
+        // add the name of the phase as a title above
+        svgContainer.append("text").attr("x", sequence * getPhaseWidth() + centerText(getPhaseWidth(), 40, currentPhase.name.length))
+                                    .attr("y", headerBuffer - 10)
+                                    .text(currentPhase.name)
+                                    .attr("font-family", "sans-serif")
+                                    .attr("font-size", "50px")
+                                    .attr("fill", "black");
+        // all done ... now recurse to the following element
+        mapPhase(tail(phases), getPhaseHeight(currentPhase), sequence + 1);
     }
     
             
@@ -65,8 +83,14 @@ function createFunnel(divId, width, height, funnelData) {
     
 }
 
-
-
+/**
+ * This function calculates where to position a text in a box based on the size and the length of the text.
+ * When using a font with variable width, the position will be an approximation since a 'I' or 'l' does not take
+ * the same amount of space as a 'W'... but in general, it will do
+ */
+function centerText(boxSize, textSize, textLength) {
+    return (boxSize / 2) - (textLength * textSize / 2);
+}
 
 function head(arr) {
     return arr[0];
