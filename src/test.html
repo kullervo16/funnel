@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Funnel example</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="./funnel.js"></script>
+    </head>
+    <body>
+        <h1>Funnel example</h1>
+        <div id="funnel1"></div>
+        <div id="funnel2"></div>
+        <script>
+            var funnel1Data = [
+                {
+                    "name": "phase1",
+                    "entries": [
+                        { "name": "entry1", "url": "http://www.google.be"},
+                        { "name": "entry2", "url": "http://www.google.be"},
+                        { "name": "entry3", "url": "http://www.google.be"},
+                    ]
+                },
+                {
+                    "name": "phase2",
+                    "entries": [
+                        { "name": "entry1", "url": "http://www.destandaard.be"}
+                    ]
+                }
+            ];
+            createFunnel("funnel1", 1500, 700, funnel1Data);
+
+        </script>
+    </body>
+</html>
