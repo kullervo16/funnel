@@ -18,17 +18,41 @@
                     "entries": [
                         { "name": "entry1", "url": "http://www.google.be"},
                         { "name": "entry2", "url": "http://www.google.be"},
-                        { "name": "entry3", "url": "http://www.google.be"},
+                        { "name": "entry3", "url": "http://www.google.be"}
                     ]
                 },
                 {
-                    "name": "WWW-WWW",
+                    "name": "phase2",
                     "entries": [
                         { "name": "entry1", "url": "http://www.destandaard.be"}
                     ]
                 }
             ];
             createFunnel("funnel1", 1000, 500, funnel1Data);
+            
+            var funnel2Data = [
+                {
+                    "name": "small",
+                    "entries": [
+                        { "name": "entry1", "url": "http://www.google.be"}
+                    ]
+                },
+                {
+                    "name": "large",
+                    "entries": [
+                        { "name": "entry1", "url": "http://www.google.be"},
+                        { "name": "entry2", "url": "http://www.google.be"},
+                        { "name": "entry3", "url": "http://www.google.be"}
+                    ]
+                },
+                {
+                    "name": "small again",
+                    "entries": [
+                        { "name": "entry1", "url": "http://www.destandaard.be"}
+                    ]
+                }
+            ];
+            createFunnel("funnel2", 1000, 500, funnel2Data);
 
         </script>
     </body>

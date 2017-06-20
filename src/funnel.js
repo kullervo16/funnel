@@ -53,8 +53,10 @@ function createFunnel(divId, width, height, funnelData) {
         console.log("Rendering "+currentPhase.name);
         var lineData = [ { "x": sequence * getPhaseWidth(),   "y": getCenter() + startHeight},  // left below
                          { "x": sequence * getPhaseWidth(),  "y": getCenter() - startHeight},   // left top
-                         { "x": (sequence+1) * getPhaseWidth(),   "y": getCenter() - getPhaseHeight(currentPhase)},  // right top
+                         { "x": (sequence+0.25) * getPhaseWidth(),   "y": getCenter() - getPhaseHeight(currentPhase)},  // center top                         
+                         { "x": (sequence+1) * getPhaseWidth(),   "y": getCenter() - getPhaseHeight(currentPhase)},  // right top                         
                          { "x": (sequence+1) * getPhaseWidth(),  "y": getCenter() + getPhaseHeight(currentPhase)},    // right below
+                         { "x": (sequence+0.25) * getPhaseWidth(),  "y": getCenter() + getPhaseHeight(currentPhase)},   // center below
                          { "x": sequence * getPhaseWidth(),   "y": getCenter() + startHeight} // and back to the start
                         ];
         
@@ -89,7 +91,11 @@ function createFunnel(divId, width, height, funnelData) {
  * the same amount of space as a 'W'... but in general, it will do
  */
 function centerText(boxSize, textSize, textLength) {
-    return (boxSize / 2) - (textLength * textSize / 2);
+    var calc = (boxSize / 2) - (textLength * textSize / 2);
+    if( calc > 0 ) {
+        return calc;
+    }
+    return 0; // prevent large texts creeping into the left side
 }
 
 function head(arr) {
