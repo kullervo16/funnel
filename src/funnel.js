@@ -16,7 +16,7 @@ function createFunnel(divId, width, height, funnelData) {
                         .x(function(d) { return d.x; })
                          .y(function(d) { return d.y; })
                         .interpolate("linear");
-    var headerBuffer = 100;
+    var headerBuffer = 150;
         
     function getPhaseWidth() {
         return width / funnelData.length ;
@@ -27,9 +27,7 @@ function createFunnel(divId, width, height, funnelData) {
             return 100;
         } else if(phase.entries.length < 4) {
             return 200;
-        } else if(phase.entries.length < 8) {
-            return 400;
-        } return 600;
+        }  return 300;
     }
     
     function getCenter() {
@@ -48,21 +46,18 @@ function createFunnel(divId, width, height, funnelData) {
     /**
      * This function will put an entry in a phase. It positions the first, then recurses.
      * @param {type} entries the entries still to be treated
-     * @param {type} sequence the sequence in the phase (needed to calculate where to draw it)
      * @returns {undefined}
      */
-    function addEntriesToPhase(entries, phaseHeight,xBase, sequence) {
-        if(entries === undefined || entries.length === 0) {
-            return; // I've done my job... stop the recursion
+    function addEntriesToPhase(entries, verticalOffsets, phaseHeight,xBase, ) {
+        for(var pos = 0;pos< entries.length;pos++) {
+            var currentEntry = entries[pos];
+
+            var entryX = xBase + randomText(getPhaseWidth(), 20, currentEntry.name.length, verticalOffsets[pos]);
+            var entryY = getCenter() + verticalOffsets[pos] * phaseHeight;
+
+            addText(entryX, entryY, 20, currentEntry.name);            
         }
-        var currentEntry = head(entries);
         
-        var entryX = xBase + randomText(getPhaseWidth(), 20, currentEntry.name.length);
-        var entryY = getCenter() + getYPositionForSequence(sequence, phaseHeight);
-        
-        addText(entryX, entryY, 20, currentEntry.name);
-        
-        addEntriesToPhase(tail(entries), phaseHeight, xBase, sequence +1);
     }
     
     /**
@@ -97,11 +92,12 @@ function createFunnel(divId, width, height, funnelData) {
              
         // add the name of the phase as a title above
         var titleX = sequence * getPhaseWidth() + centerText(getPhaseWidth(), 40, currentPhase.name.length);
-        var titleY = headerBuffer - 10;
+        var titleY = headerBuffer - 70;
         addText(titleX, titleY, 50, currentPhase.name);
         
         // now add the entries to the phase
-        addEntriesToPhase(currentPhase.entries, getPhaseHeight(currentPhase), sequence * getPhaseWidth(), 0);
+        var verticalOffsets = generateVerticalPositions(currentPhase.entries.length);
+        addEntriesToPhase(currentPhase.entries, verticalOffsets, getPhaseHeight(currentPhase), sequence * getPhaseWidth(), 0);
                            
         // all done ... now recurse to the following element
         mapPhase(tail(phases), getPhaseHeight(currentPhase), sequence + 1);
@@ -134,31 +130,19 @@ function centerText(boxSize, textSize, textLength) {
  * the same amount of space as a 'W'... but in general, it will do. Instead of always centering, it will use Math.random to
  * pull it more to the left or to the rigt to get a richer distribution...
  */
-function randomText(boxSize, textSize, textLength) {
-    var calc = (boxSize * Math.random()) - (textLength * textSize / 2);
+function randomText(boxSize, textSize, textLength, vOffSet) {
+    var rand = Math.random();
+    if((vOffSet <= -0.5 || vOffSet >= 0.5 ) && rand < 0.5) {
+        rand = 0.5;
+    }
+    var calc = (boxSize * rand) - (textLength * textSize / 2);
     if( calc < 0) {
         return 0;
     }
     return calc; // prevent large texts creeping into the left side
 }
 
-/**
- * This function calculates the position for a sequence. The first element will be in the middle, the next in the middle of the middle, ...
- */
-function getYPositionForSequence(sequence, height) {
-    var fraction = Math.log2(sequence+2);
-    var offset =  height / (fraction * 2);
-    
-    if(sequence === 0) {
-        return 0; // first one, dead center
-    } else if(sequence === 1) {
-        return offset;
-    } else if(sequence === 2) {
-        return -offset;
-    }
-    return 0;
-    
-}
+
 
 function head(arr) {
     return arr[0];
@@ -166,4 +150,25 @@ function head(arr) {
 
 function tail(arr) {
     return arr.slice(1);
+}
+
+/**
+ * This function generates an array with vertical positions relative to the center based on the following
+ * principal : 0, [-1/2,1/2], [-1/4,1/4,-3/4,3/4], [...]. This way, there will never be 2 words on the same
+ * position, while maintaining a maximum round the center (cfr tagcloud concept)
+ * 
+ * It generates enough points to map at least numberOfPoints
+ */
+function generateVerticalPositions(numberOfPoints) {    
+    var segment = 2.0;    
+    var result = [0];
+    
+    while (result.length < numberOfPoints) {
+        for(var i = 1;i<segment;i += 2) {
+            result.push(i / segment);
+            result.push(-1 * i / segment);
+        }
+        segment *= 2;        
+    }
+    return result;
 }
