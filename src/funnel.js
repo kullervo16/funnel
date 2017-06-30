@@ -17,6 +17,8 @@ function createFunnel(divId, width, height, funnelData) {
                          .y(function(d) { return d.y; })
                         .interpolate("linear");
     var headerBuffer = 150;
+    var currentId = 0;
+    var urlMap = {};
         
     function getPhaseWidth() {
         return width / funnelData.length ;
@@ -34,13 +36,15 @@ function createFunnel(divId, width, height, funnelData) {
         return headerBuffer + (height / 2);
     }
     
-    function addText(x, y,size, txt) {
-        svgContainer.append("text").attr("x", x)
+    function addText(id, x, y,size, txt) {
+        svgContainer.append("text").attr("id", id)
+                                    .attr("x", x)
                                     .attr("y", y)
                                     .text(txt)
                                     .attr("font-family", "sans-serif")
                                     .attr("font-size", size+"px")
-                                    .attr("fill", "black");
+                                    .attr("fill", "black")
+                                    .attr("style", "cursor: pointer;");
     }
     
     /**
@@ -59,8 +63,13 @@ function createFunnel(divId, width, height, funnelData) {
 
             var entryX = xBase + randomText(getPhaseWidth(), getFontSizeForEntry(currentEntry), currentEntry.name.length, verticalOffsets[pos]);
             var entryY = getCenter() + verticalOffsets[pos] * phaseHeight;
-
-            addText(entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name);            
+            var entryId = divId+"_entry_"+(currentId++);
+            
+            addText(entryId,entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name);  
+            urlMap[entryId] = currentEntry.url;
+            
+            // now add an onclick handler to the text
+            document.getElementById(entryId).onclick = function() { window.open(urlMap[this.id],'_blank');};
         }
         
     }
@@ -98,7 +107,7 @@ function createFunnel(divId, width, height, funnelData) {
         // add the name of the phase as a title above
         var titleX = sequence * getPhaseWidth() + centerText(getPhaseWidth(), 40, currentPhase.name.length);
         var titleY = headerBuffer - 70;
-        addText(titleX, titleY, 50, currentPhase.name);
+        addText(divId+"_title_"+currentPhase.name,titleX, titleY, 50, currentPhase.name);
         
         // now add the entries to the phase
         var verticalOffsets = generateVerticalPositions(currentPhase.entries.length);
