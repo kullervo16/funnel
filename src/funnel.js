@@ -49,13 +49,18 @@ function createFunnel(divId, width, height, funnelData) {
      * @returns {undefined}
      */
     function addEntriesToPhase(entries, verticalOffsets, phaseHeight,xBase, ) {
+        
+        entries = entries.sort(function(a, b) {                  
+            return getFontSizeForEntry(b) - getFontSizeForEntry(a);
+        });        
+        
         for(var pos = 0;pos< entries.length;pos++) {
-            var currentEntry = entries[pos];
+            var currentEntry = entries[pos];            
 
-            var entryX = xBase + randomText(getPhaseWidth(), 20, currentEntry.name.length, verticalOffsets[pos]);
+            var entryX = xBase + randomText(getPhaseWidth(), getFontSizeForEntry(currentEntry), currentEntry.name.length, verticalOffsets[pos]);
             var entryY = getCenter() + verticalOffsets[pos] * phaseHeight;
 
-            addText(entryX, entryY, 20, currentEntry.name);            
+            addText(entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name);            
         }
         
     }
@@ -171,4 +176,13 @@ function generateVerticalPositions(numberOfPoints) {
         segment *= 2;        
     }
     return result;
+}
+
+
+function getFontSizeForEntry(entry) {    
+    if(entry.fontSize === undefined) {        
+        return 20; // default fontsize
+    }
+    return entry.fontSize;   
+    
 }
