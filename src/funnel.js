@@ -69,7 +69,10 @@ function createFunnel(divId, width, height, funnelData) {
             urlMap[entryId] = currentEntry.url;
             
             // now add an onclick handler to the text
-            document.getElementById(entryId).onclick = function() { window.open(urlMap[this.id],'_blank');};
+            var textEl = document.getElementById(entryId);
+            if(textEl !== undefined) {
+                textEl.onclick = function() { window.open(urlMap[this.id],'_blank');};
+            }
         }
         
     }
