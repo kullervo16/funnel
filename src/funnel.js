@@ -37,14 +37,13 @@ function createFunnel(divId, width, height, funnelData) {
     }
     
     function addText(id, x, y,size, txt, color) {
-        svgContainer.append("text").attr("id", id)
+        return svgContainer.append("text").attr("id", id)
                                     .attr("x", x)
                                     .attr("y", y)
                                     .text(txt)
                                     .attr("font-family", "sans-serif")
                                     .attr("font-size", size+"px")
-                                    .attr("fill", color)
-                                    .attr("style", "cursor: pointer;");
+                                    .attr("fill", color);
     }
     
     /**
@@ -65,7 +64,8 @@ function createFunnel(divId, width, height, funnelData) {
             var entryY = getCenter() + verticalOffsets[pos] * phaseHeight;
             var entryId = divId+"_entry_"+(currentId++);
             
-            addText(entryId,entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name, "white");  
+            var textEl = addText(entryId,entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name, "white"); 
+            textEl.attr("style", "cursor: pointer;")
             urlMap[entryId] = currentEntry.url;
             
             // now add an onclick handler to the text
