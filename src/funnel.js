@@ -36,14 +36,14 @@ function createFunnel(divId, width, height, funnelData) {
         return headerBuffer + (height / 2);
     }
     
-    function addText(id, x, y,size, txt) {
+    function addText(id, x, y,size, txt, color) {
         svgContainer.append("text").attr("id", id)
                                     .attr("x", x)
                                     .attr("y", y)
                                     .text(txt)
                                     .attr("font-family", "sans-serif")
                                     .attr("font-size", size+"px")
-                                    .attr("fill", "black")
+                                    .attr("fill", color)
                                     .attr("style", "cursor: pointer;");
     }
     
@@ -65,7 +65,7 @@ function createFunnel(divId, width, height, funnelData) {
             var entryY = getCenter() + verticalOffsets[pos] * phaseHeight;
             var entryId = divId+"_entry_"+(currentId++);
             
-            addText(entryId,entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name);  
+            addText(entryId,entryX, entryY, getFontSizeForEntry(currentEntry), currentEntry.name, "white");  
             urlMap[entryId] = currentEntry.url;
             
             // now add an onclick handler to the text
@@ -100,14 +100,14 @@ function createFunnel(divId, width, height, funnelData) {
         
         svgContainer.append("path")
                     .attr("d", lineFunction(lineData))
-                    .attr("stroke", "blue")
+                    .attr("stroke", "teal")
                     .attr("stroke-width", 2)
-                    .attr("fill", "blue");
+                    .attr("fill", "teal");
              
         // add the name of the phase as a title above
         var titleX = sequence * getPhaseWidth() + centerText(getPhaseWidth(), 40, currentPhase.name.length);
         var titleY = headerBuffer - 70;
-        addText(divId+"_title_"+currentPhase.name,titleX, titleY, 50, currentPhase.name);
+        addText(divId+"_title_"+currentPhase.name,titleX, titleY, 50, currentPhase.name, "black");
         
         // now add the entries to the phase
         var verticalOffsets = generateVerticalPositions(currentPhase.entries.length);
