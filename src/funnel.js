@@ -51,7 +51,7 @@ function createFunnel(divId, width, height, funnelData) {
      * @param {type} entries the entries still to be treated
      * @returns {undefined}
      */
-    function addEntriesToPhase(entries, verticalOffsets, phaseHeight,xBase, ) {
+    function addEntriesToPhase(entries, verticalOffsets, phaseHeight,xBase ) {
         
         entries = entries.sort(function(a, b) {                  
             return getFontSizeForEntry(b) - getFontSizeForEntry(a);
